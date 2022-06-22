@@ -17,7 +17,7 @@ contract WeSwapCaller is IWeSwapCaller, DistributionCaller, SafeERC20Extension, 
 
     receive() external payable {
         // cannot directly send eth to this contract
-        require(msg.sender != tx.origin);
+        require(msg.sender != tx.origin, "cannot directly send eth to this contract");
     }
 
     function makeCall(CallDescription memory desc) external override {
