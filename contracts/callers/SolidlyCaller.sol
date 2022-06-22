@@ -29,7 +29,7 @@ abstract contract SolidlyCaller is ISolidlyCaller {
         }
 
         uint256 inAmount = IERC20(srcToken).balanceOf(pair).sub(inReserve);
-        require(inAmount > 0, "INSUFFICIENT_INPUT_AMOUNT");
+        require(inAmount > 0, "WeSwap: INSUFFICIENT_INPUT_AMOUNT");
         uint256 outAmount = calculateOutAmount(pair, inAmount, reverse);
 
         (uint256 amount0Out, uint256 amount1Out) = reverse ? (outAmount, uint256(0)) : (uint256(0), outAmount);
