@@ -12,8 +12,8 @@ library CallDescriptions {
         address target = address(desc.target);
         if (target == address(0)) {
             target = address(this);
+            require(target.balance >= desc.value, "WeSwap: Insufficient balance for external call");
         }
-        require(target.balance >= desc.value, "WeSwap: Insufficient balance for external call");
         bool success;
         bytes memory returnData;
         if (desc.gasLimit > 0) {
