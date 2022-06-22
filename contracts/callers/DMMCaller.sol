@@ -22,6 +22,7 @@ abstract contract DMMCaller is IDMMCaller {
         (reserve0, reserve1) = reverse ? (reserve1, reserve0) : (reserve0, reserve1);
         (vReserve0, vReserve1) = reverse ? (vReserve1, vReserve0) : (vReserve0, vReserve1);
         uint256 inAmount = from.balanceOf(pool).sub(reserve0);
+        require(inAmount > 0, "INSUFFICIENT_INPUT_AMOUNT");
         uint256 outAmount = calculateDmmOutAmount(vReserve0, vReserve1, inAmount, feeInPrecision);
 
         (uint256 amount0Out, uint256 amount1Out) = reverse ? (outAmount, uint256(0)) : (uint256(0), outAmount);

@@ -42,6 +42,7 @@ abstract contract UniswapV2LikeCaller is IUniswapV2LikeCaller {
         }
 
         uint256 inAmount = IERC20(srcToken).balanceOf(pair).sub(inReserve);
+        require(inAmount > 0, "INSUFFICIENT_INPUT_AMOUNT");
         uint256 outAmount = calculateOutAmount(inReserve, outReserve, inAmount, (pool & NUMERATOR_MASK) >> NUMERATOR_OFFSET);
 
         (uint256 amount0Out, uint256 amount1Out) = reverse ? (outAmount, uint256(0)) : (uint256(0), outAmount);
