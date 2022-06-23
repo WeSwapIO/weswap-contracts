@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity 0.6.12;
 
 library RevertReasonParser {
     function parse(bytes memory data, string memory prefix) internal pure returns (string memory) {
