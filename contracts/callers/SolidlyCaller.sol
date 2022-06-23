@@ -29,7 +29,6 @@ abstract contract SolidlyCaller is ISolidlyCaller {
         }
 
         uint256 inAmount = IERC20(srcToken).balanceOf(pair).sub(inReserve);
-        require(inAmount > 0, "WeSwap: INSUFFICIENT_INPUT_AMOUNT");
         uint256 outAmount = calculateOutAmount(pair, inAmount, reverse);
 
         (uint256 amount0Out, uint256 amount1Out) = reverse ? (outAmount, uint256(0)) : (uint256(0), outAmount);
@@ -37,11 +36,16 @@ abstract contract SolidlyCaller is ISolidlyCaller {
     }
 
     function _f(uint256 x0, uint256 y) private pure returns (uint256) {
-        return (x0 * ((((y * y) / 1e18) * y) / 1e18)) / 1e18 + (((((x0 * x0) / 1e18) * x0) / 1e18) * y) / 1e18;
+        uint256 part1 = (x0.mul(((((y.mul(y)).div(1e18)).mul(y)).div(1e18)))).div(1e18);
+        uint256 part2_1 = x0.mul(x0);
+        uint256 part2 = (((((part2_1).div(1e18)).mul(x0)).div(1e18)).mul(y)).div(1e18);
+        return part1.add(part2);
     }
 
     function _d(uint256 x0, uint256 y) private pure returns (uint256) {
-        return (3 * x0 * ((y * y) / 1e18)) / 1e18 + ((((x0 * x0) / 1e18) * x0) / 1e18);
+        uint256 part1 = (x0.mul(3).mul((y.mul(y).div(1e18)))).div(1e18);
+        uint256 part2 = (((x0.mul(x0)).div(1e18)).mul(x0)).div(1e18);
+        return part1.add(part2);
     }
 
     function _get_y(
@@ -53,18 +57,18 @@ abstract contract SolidlyCaller is ISolidlyCaller {
             uint256 y_prev = y;
             uint256 k = _f(x0, y);
             if (k < xy) {
-                uint256 dy = ((xy - k) * 1e18) / _d(x0, y);
-                y = y + dy;
+                uint256 dy = ((xy.sub(k)).mul(1e18)).div(_d(x0, y));
+                y = y.add(dy);
             } else {
-                uint256 dy = ((k - xy) * 1e18) / _d(x0, y);
-                y = y - dy;
+                uint256 dy = ((k.sub(xy)).mul(1e18)).div(_d(x0, y));
+                y = y.sub(dy);
             }
             if (y > y_prev) {
-                if (y - y_prev <= 1) {
+                if (y.sub(y_prev) <= 1) {
                     return y;
                 }
             } else {
-                if (y_prev - y <= 1) {
+                if (y_prev.sub(y) <= 1) {
                     return y;
                 }
             }
@@ -80,13 +84,13 @@ abstract contract SolidlyCaller is ISolidlyCaller {
         bool stable
     ) private pure returns (uint256) {
         if (stable) {
-            uint256 _x = (x * 1e18) / decimals0;
-            uint256 _y = (y * 1e18) / decimals1;
-            uint256 _a = (_x * _y) / 1e18;
-            uint256 _b = ((_x * _x) / 1e18 + (_y * _y) / 1e18);
-            return (_a * _b) / 1e18; // x3y+y3x >= k
+            uint256 _x = (x.mul(1e18)).div(decimals0);
+            uint256 _y = (y.mul(1e18)).div(decimals1);
+            uint256 _a = (_x.mul(_y)).div(1e18);
+            uint256 _b = ((_x.mul(_x)).div(1e18)).add((_y.mul(_y)).div(1e18));
+            return (_a.mul(_b)).div(1e18); // x3y+y3x >= k
         } else {
-            return x * y; // xy >= k
+            return x.mul(y); // xy >= k
         }
     }
 
@@ -95,19 +99,19 @@ abstract contract SolidlyCaller is ISolidlyCaller {
         uint256 amount,
         bool reverse
     ) internal view returns (uint256) {
-        amount -= amount / 10000;
+        amount = amount.sub(amount.div(10000));
         (uint256 decimals0, uint256 decimals1, uint256 reserve0, uint256 reserve1, bool stable, , ) = ISolidlyPair(pair).metadata();
         if (stable) {
             uint256 xy = _k(reserve0, reserve1, decimals0, decimals1, stable);
-            reserve0 = (reserve0 * 1e18) / decimals0;
-            reserve1 = (reserve1 * 1e18) / decimals1;
+            reserve0 = (reserve0.mul(1e18)).div(decimals0);
+            reserve1 = (reserve1.mul(1e18)).div(decimals1);
             (uint256 reserveA, uint256 reserveB) = reverse ? (reserve1, reserve0) : (reserve0, reserve1);
-            amount = reverse ? (amount * 1e18) / decimals1 : (amount * 1e18) / decimals0;
-            uint256 y = reserveB - _get_y(amount + reserveA, xy, reserveB);
-            return (y * (reverse ? decimals0 : decimals1)) / 1e18;
+            amount = reverse ? (amount.mul(1e18)).div(decimals1) : (amount.mul(1e18)).div(decimals0);
+            uint256 y = reserveB.sub(_get_y(amount.add(reserveA), xy, reserveB));
+            return (y.mul((reverse ? decimals0 : decimals1))).div(1e18);
         } else {
             (uint256 reserveA, uint256 reserveB) = reverse ? (reserve1, reserve0) : (reserve0, reserve1);
-            return (amount * reserveB) / (reserveA + amount);
+            return (amount.mul(reserveB)).div((reserveA.add(amount)));
         }
     }
 }
