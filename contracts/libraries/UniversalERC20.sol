@@ -3,6 +3,7 @@ pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 
 library UniversalERC20 {
@@ -20,7 +21,7 @@ library UniversalERC20 {
     ) internal {
         if (amount > 0) {
             if (isETH(token)) {
-                to.transfer(amount);
+                Address.sendValue(to, amount);
             } else {
                 token.safeTransfer(to, amount);
             }
