@@ -11,6 +11,11 @@ module.exports = {
             url: 'https://eth-mainnet.g.alchemy.com/v2/gAhzVEOdVxVAcav2H2WL0dHCugQMfl1W',
             accounts: [process.env.PK],
         },
+        bsc_mainnet: {
+            url: 'https://bsc-dataseed3.ninicoin.io',
+            chainId: 56,
+            accounts: [process.env.PK],
+        },
         rinkeby: {
             url: 'https://rinkeby.infura.io/v3/eaa5fb64cc5d4f43aa01d12ead1602f3',
             gas: 2000000,
