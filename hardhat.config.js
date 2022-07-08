@@ -33,6 +33,11 @@ module.exports = {
             gasPrice: 1000000000,
             accounts: [process.env.PK],
         },
+        polygon: {
+            url: 'https://polygon-rpc.com',
+            chainId: 137,
+            accounts: [process.env.PK],
+        },
     },
     solidity: {
         version: "0.6.12",
