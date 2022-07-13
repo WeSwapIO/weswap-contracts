@@ -38,6 +38,11 @@ module.exports = {
             chainId: 137,
             accounts: [process.env.PK],
         },
+        arbitrum: {
+            url: 'https://rpc.ankr.com/arbitrum',
+            chainId: 42161,
+            accounts: [process.env.PK],
+        },
     },
     solidity: {
         version: "0.6.12",
