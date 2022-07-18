@@ -43,6 +43,11 @@ module.exports = {
             chainId: 42161,
             accounts: [process.env.PK],
         },
+        avalanche: {
+            url: 'https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc',
+            chainId: 43114,
+            accounts: [process.env.PK],
+        },
     },
     solidity: {
         version: "0.6.12",
