@@ -48,6 +48,11 @@ module.exports = {
             chainId: 43114,
             accounts: [process.env.PK],
         },
+        optimism: {
+            url: 'https://mainnet.optimism.io',
+            chainId: 10,
+            accounts: [process.env.PK],
+        },
     },
     solidity: {
         version: "0.6.12",
